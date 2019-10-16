@@ -544,4 +544,443 @@ void cd::rental()
     <<"\n\n\tENTER YOUR CHOICE\t";
     cin>>chi;
     fstream in("cds.dat",ios::in|ios::out|ios::binary);
-
+    switch(chi)
+    {
+        case 1: cout<<"\n\tENTER THE TITLE\t";
+                gets(sname);
+                while(!in.eof())
+                {
+                    pos=in.tellg();
+                    in.read((char*)&c4,sizeof(c4));
+                    if(strcmpi(sname,c4.name)==0)
+                    {
+                        flag=1;
+                        break;
+                    }
+                }
+                if(flag==1)
+                {
+                    if(c4.stock==0)
+                    {
+                        cout<<"\nOUT OF STOCK";
+                        in.close();
+                    }
+                    else
+                    {
+                        c4.showdata();
+                        flag=2;
+                        cout<<"\n\tENTER THE NUMBER TO BE RENTED: ";
+                        int no;
+                        cin>>no;
+                        if(no>c4.stock)
+                            cout<<"\n\tTHE ENTERED NUMBER OF CDS ARE NOT AVAILABLE";
+                        else
+                        {
+                            c4.stock=c4.stock-no;
+                            in.seekp(pos);
+                            in.write((char*)&c4,sizeof(c4));
+                            in.close();
+                        }
+                    }
+                }
+                else
+                {
+                    cout<<"\n\t\t\tENTERED TITLE NOT FOUND";
+                    in.close();
+                }
+                break;
+        case 2: cout<<"\n\tENTER DEVELOPER TO BE SEARCHED\t";
+                gets(sdev);
+                while(!in.eof())
+                {
+                    pos=in.tellg();
+                    in.read((char*)&c4,sizeof(c4));
+                    if(strcmpi(sdev,c4.dev)==0)
+                    {
+                        flag=1;
+                        break;
+                    }
+                }
+                if(flag==0)
+                {
+                    cout<<"\n\t\tENTERED TITLE NOT FOUND";
+                }
+                else if(flag==1)
+                {
+                    if(c4.stock==0)
+                        cout<<"\n\tOUT OF STOCK";
+                    else
+                    {
+                        c4.showdata();
+                        cout<<"\n\tENTER NUMBER OF CDS TO BE RENTED: ";
+                        cin>>no;
+                        if(no>c4.stock)
+                        {
+                            cout<<"\n\tTHE ENTERED NUMBER OF CDS ARE NOT AVAILABLE";
+                            in.close();
+                        }
+                        else
+                        {
+                            flag=2;
+                            c4.stock=c4.stock-no;
+                            in.seekp(pos);
+                            in.write((char*)&c4,sizeof(c4));
+                            in.close();
+                        }
+                    }
+                    break;
+                }
+                else
+                {
+                in.close();
+                break;
+                }
+                break;
+        default:
+                clrscr();
+                cout<<"\n\n\n\n\n\n\n\n\n\n\n\t\t\t\tINVALID CHOICE!\n\n\t\t\t\tTRY AGAIN!";
+    }
+    if(c4.stock!=0&&flag==2)
+    {
+        cout<<"\n\t CD IS AVAILABLE";
+        c4.showdata();
+        float c=c4.rate*0.05;
+        cout<<"\n\n\tRENTAL RATE PER DAY PER CD IS Rs. ";
+        cout<<c;
+        cout<<"\n\tENTER NUMBER OF DAYS ";
+        int days;
+        cin>>days;
+        clrscr();
+        float tc=(c*days*no);
+        cout<<"\n\t\tTOTAL COST FOR "
+        <<days<<" DAYS IS "
+        <<(c*days);
+        cout<<"\n\t\t THANK YOU FOR RENTING WITH US... "
+        <<"\n\t\t VISIT AGAIN";
+    }
+}
+void cd::view()
+{ 
+    ifstream inv("cds.dat",ios::binary);
+    clrscr();
+    int size,no,i=0,j=0;
+    line();
+    cout<<"\n\t\t\tVIEW";
+    line();
+    cout<<"\n\n\n\n\t\t\t1.BY YEAR"
+    <<"\n\n\n\n\t\t\t2.BY RATE(Rs)"
+    <<"\n\n\n\n\t\t\t3.BY LANGUAGE"
+    <<"\n\n\n\n\t\t\t4.ALL";
+    cout<<"\n\n\n\n\t\t\t\tENTER CHOICE : ";
+    int c;
+    cd c5;
+    cin>>c;
+    clrscr();
+    switch(c)
+    {
+        clrscr();
+        cout<<"\n\n\n\n\n\n\n\n\n\n\n\t\t\tVIEW\n\n\n";
+        case 1: cout<<"\n\tENTER YEAR TO BE SEARCHED : ";
+                int ye;
+                cin>>ye;
+                inv.seekg(0,ios::end);
+                size=inv.tellg();
+                no=size/sizeof(cd);
+                inv.seekg(0);
+                while(!inv.eof() && i<no)
+                {
+                    i++;
+                    if(j%2==0)
+                    {
+                        j++;
+                        cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                        getch();
+                        clrscr();
+                    }
+                    inv.read((char*)&c5,sizeof(c5));
+                    if(c5.year==ye)
+                    {
+                        c5.showdata();
+                    }
+                }
+                if(j==0)
+                {
+                    cout<<"\n\n\t\tCD NOT FOUND";
+                    break;
+                }
+                break;
+        case 2: int ch;
+                cout<<"\nCHOOSE REQUIRED RANGE"
+                <<"\n\n\t\t1.Rs100 & BELOW"
+                <<"\n\n\t\t2.Rs100-Rs200"
+                <<"\n\n\t\t3.Rs200-Rs500"
+                <<"\n\n\t\t4.Rs500-Rs1000"
+                <<"\n\n\t\t5.Rs1000-Rs5000"
+                <<"\n\n\t\t6.Rs 5000 & ABOVE"
+                <<"\n\nENTER YOUR CHOICE\t";
+                cin>>ch;
+                switch(ch)
+                {
+                    case 1: inv.seekg(0,ios::end);
+                            size=inv.tellg();
+                            no=size/sizeof(cd);
+                            inv.seekg(0);
+                            while(!inv.eof() && i<no)
+                            {
+                                i++; 
+                                if(j%2==0)
+                                {
+                                    j++;
+                                    cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                                    getch();
+                                    clrscr();
+                                } 
+                                inv.read((char*)&c5,sizeof(c5));
+                                if(c5.rate<=100)
+                                    c5.showdata();
+                            }
+                            break;
+                    case 2: inv.seekg(0,ios::end);
+                            size=inv.tellg();
+                            no=size/sizeof(cd);
+                            i=0;
+                            inv.seekg(0);
+                            while(!inv.eof() && i<no)
+                            {
+                                i++; 
+                                if(j%2==0)
+                                {
+                                    j++;
+                                    cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                                    getch();
+                                    clrscr();
+                                } 
+                                inv.read((char*)&c5,sizeof(c5));
+                                if(c5.rate>100&&c5.rate<=200)
+                                    c5.showdata();
+                            }
+                            break;
+                    case 3: inv.seekg(0,ios::end);
+                            size=inv.tellg();
+                            no=size/sizeof(cd);
+                            i=0;
+                            inv.seekg(0);
+                            while(!inv.eof() && i<no)
+                            {
+                                i++;
+                                if(j%2==0)
+                                {
+                                    j++;
+                                    cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                                    getch();
+                                    clrscr();
+                                }
+                                inv.read((char*)&c5,sizeof(c5));
+                                if(c5.rate>200&&c5.rate<=500)
+                                    c5.showdata();
+                            }
+                            break;
+                    case 4: inv.seekg(0,ios::end);
+                            size=inv.tellg();
+                            no=size/sizeof(cd);
+                            i=0;
+                            inv.seekg(0);
+                            while(!inv.eof() && i<no)
+                            {
+                                i++;
+                                if(j%2==0)
+                                {
+                                    j++;
+                                    cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                                    getch();
+                                    clrscr();
+                                }
+                                inv.read((char*)&c5,sizeof(c5));
+                                if(c5.rate>500&&c5.rate<=1000)
+                                    c5.showdata();
+                            }
+                            break;
+                    case 5: inv.seekg(0,ios::end);
+                            size=inv.tellg();
+                            no=size/sizeof(cd);
+                            i=0;
+                            inv.seekg(0);
+                            while(!inv.eof() && i<no)
+                            {
+                                i++;
+                                if(j%2==0)
+                                {
+                                    j++;
+                                    cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                                    getch();
+                                    clrscr();
+                                }
+                                inv.read((char*)&c5,sizeof(c5));
+                                if(c5.rate>1000&&c5.rate<=5000)
+                                    c5.showdata();
+                            }
+                            break;
+                    case 6: inv.seekg(0,ios::end);
+                            size=inv.tellg();
+                            no=size/sizeof(cd);
+                            i=0;
+                            inv.seekg(0);
+                            while(!inv.eof() && i<no)
+                            {
+                                i++;
+                                if(i%2==0)
+                                {
+                                    cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                                    getch();
+                                    clrscr();
+                                }
+                                inv.read((char*)&c5,sizeof(c5));
+                                if(c5.rate>5000)
+                                    c5.showdata();
+                            }
+                            break;
+                    default:
+                            clrscr();
+                            cout<<"\n\n\n\n\n\n\n\n\n\n\n\t\t\t\tINVALID CHOICE!\n\n\t\t\t\tTRY AGAIN!";
+                }
+                break;
+        case 3: cout<<"\nENTER LANGUAGE:";
+                char slan[80];
+                gets(slan);
+                int flags=0;
+                inv.seekg(0,ios::end);
+                size=inv.tellg();
+                no=size/sizeof(cd);
+                i=0;
+                inv.seekg(0);
+                while(!inv.eof() && i<no)
+                {
+                    i++;
+                    if(j%2==0)
+                    {
+                        j++;
+                        cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                        getch();
+                        clrscr();
+                    }
+                    inv.read((char*)&c5,sizeof(c5));
+                    if(strcmpi(slan,c5.lang)==0)
+                    {
+                        c5.showdata();
+                        flags=1;
+                    }
+                }
+                if(flags==0)
+                {
+                    cout<<"\nLANGUAGE NOT FOUND";
+                }
+                break;
+        case 4: inv.seekg(0,ios::end);
+                size=inv.tellg();
+                no=size/sizeof(cd);
+                i=0;
+                inv.seekg(0);
+                while(!inv.eof() && i<no)
+                {
+                    i++;
+                    if(i%2==0)
+                    {
+                        cout<<"\n\n\t\tNEXT PAGE,PRESS ANY KEY";
+                        getch();
+                        clrscr();
+                    }
+                    inv.read((char*)&c5,sizeof(c5));
+                    c5.showdata();
+                }
+                break;
+        default:
+                clrscr();
+                cout<<"\n\n\n\n\n\n\n\n\n\n\n\t\t\t\tINVALID CHOICE!\n\n\t\t\t\tTRY AGAIN!";
+            
+    }
+    inv.close();
+}
+void cd::purchase()
+{
+    int no;
+    clrscr();
+    line();
+    cout<<"\n\t\t\t\tPURCHASE";
+    line();
+    cout<<"\n\n\n\t\t ENTER NUMBER OF CD'S ";
+    cin>>no;
+    for(int i=0;i<no;i++)
+    { 
+        cd c1; clrscr();
+        line();
+        cout<<"\n\t\t\t\tPURCHASE";
+        line();
+        ofstream out("cds.dat",ios::app|ios::binary);
+        cout<<"\n\n\t\t ENTER CD DETAILS OF CD NO."<<i+1
+        <<"\n\n\n\t\t ENTER TITLE : ";
+        gets(c1.name);
+        cout<<"\n\t\t ENTER CD TYPE : ";
+        gets(c1.type);
+        cout<<"\n\t\t ENTER RATE(Rs) : ";
+        cin>>c1.rate;
+        cout<<"\n\t\t ENTER DEVELOPERS : ";
+        gets(c1.dev);
+        cout<<"\n\t\t ENTER LANGUAGE : ";
+        gets(c1.lang);
+        cout<<"\n\t\t ENTER YEAR : ";
+        cin>>c1.year;
+        cout<<"\n\t\t ENTER QUANTITY OF CDS : ";
+        cin>>c1.stock;
+        cout<<"\n\t\t ENTER SIZE(mb) : ";
+        cin>>c1.size;
+        out.write((char*)&c1,sizeof(c1));
+        out.close();
+    }
+}
+void main()
+{ 
+    clrscr();
+    char cho='n';
+    int ch;
+    cd c1;
+    //c1.graph();
+    c1.pass();
+    do
+    {
+        clrscr();
+        line();
+        cout<<"\n\t\t\t\tMAIN MENU";
+        line();
+        cout<<"\n\n\t\t\t 1.PURCHASE"
+        <<"\n\t\t\t 2.SALE"
+        <<"\n\t\t\t 3.RENTAL"
+        <<"\n\t\t\t 4.VIEW"
+        <<"\n\t\t\t 5.DELETE"
+        <<"\n\t\t\t 6.MODIFY"
+        <<"\n\t\t\t 7.QUIT";
+        line();
+        cout<<"\n\n\n\t ENTER CHOICE :- ";
+        cin>>ch;
+        switch (ch)
+        {
+            case 1: c1.purchase();
+            break;
+            case 2: c1.sale();
+            break;
+            case 3: c1.rent();
+            break;
+            case 4:c1.view();
+            break;
+            case 5:c1.del();
+            break;
+            case 6:c1.modi();
+            break;
+            case 7:exit(0);
+            default:
+            clrscr();
+            cout<<"\n\n\n\n\n\n\n\n\n\n\n\t\t\t\tINVALID CHOICE!\n\n\t\t\t\tTRY AGAIN!";
+        }
+        cout<<"\n\n\n\n\t\t\tDO YOU WANT TO CONTINUE?(y/n):";
+        cin>>cho;
+    }while(cho=='y'||cho=='Y');
+}
